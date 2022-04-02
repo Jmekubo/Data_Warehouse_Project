@@ -1,0 +1,132 @@
+
+***********create DWH  tables *****************
+
+create or replace table weatherRestaurants.dwh.dim_users (
+	user_id varchar primary Key , 
+	compliment_cool int,
+	compliment_cute int,
+	compliment_funny int,
+	compliment_hot int,
+	compliment_list int,
+	compliment_more int,
+	compliment_note int,
+	compliment_photos int,
+	compliment_plain int,
+	compliment_profile int,
+	compliment_writer int,
+	elite string,
+	fans int,
+	friends string, 
+	user_name string, 
+  	yelping_since timestamp
+	);
+	
+create or replace table weatherRestaurants.dwh.dim_climate (
+	clim_id int , 
+	min int null,
+	max int null,
+	normal_min int null,
+	normal_max int null,
+	precipitation varchar null,
+	precipitation_normal double null
+	);
+	
+
+	
+create or replace table weatherRestaurants.dwh.dim_business (
+	business_id ,
+	address text null,
+	bikeparking varchar(255),
+	AcceptsCR_Cards varchar(50),
+	price_range varchar,
+	parking_garage text,
+	parking_street text,
+	parking_validated text,
+	parking_lot text,
+	parking_valet text,
+	categories text,
+	city varchar(100),
+	hours_Friday varchar,
+	hours_Monday varchar,
+	hours_Saturday varchar,
+	hours_Sunday varchar,
+	hours_Thursday varchar,
+	hours_Tuesday varchar,
+	hours_Wednesday varchar,
+	is_open varchar,
+	latitude varchar,
+	longitude varchar,
+	restaurant_name text,
+	postal_code text,
+	state varchar(50)
+	
+	);
+	
+
+	
+create or replace table weatherRestaurants.dwh.dim_reviews (
+	rev_id int ,
+	cool number ,
+   	funny number,
+	stars number,
+	text string,
+	useful number
+
+	);
+
+create or replace table weatherRestaurants.dwh.dim_covid (
+	cov_id int ,
+	call_to_action_enabled varchar, 
+	covid_banner varchar, 
+	grubhub_enabled varchar , 
+	request_a_quote_enabled varchar, 
+	temporary_closed_untill varchar,
+        virtual_service_offered varchar,
+	delivery_or_takeout varchar,
+	highlights varchar
+	);
+
+create or replace table weatherRestaurants.dwh.dim_tip (
+	tip_id int ,
+	text string 
+	);
+	
+create or replace table weatherRestaurants.dwh.dim_date (
+	date_id int autoincrement primary Key,
+	date date,
+	year int , 
+	month int,
+	day_of_week int,
+	day varchar, 
+	hour_of_day int
+	
+	);
+	
+create or replace table weatherRestaurants.dwh.fact_customer_reviews (
+	user_id varchar references dim_users(user_id),
+	rev_id int references dim_reviews(rev_id) , 
+	business_id varchar references dim_business(business_id),
+	clim_id int references dim_climate(clim_id),
+	cov_id int references dim_covid(cov_id ),
+	tip_id int references dim_tip(tip_id ),
+	date_id int references dim_date(date_id),
+        user_compliment_count int,
+	review_count int,
+	average_stars int
+	
+	);
+	
+
+	
+
+
+
+
+
+
+
+
+
+
+
+

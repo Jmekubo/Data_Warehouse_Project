@@ -1,0 +1,98 @@
+
+**************CREATE FLATTENED TABLES************
+
+create or replace table weatherRestaurants.ods.yelp_flattened_business (
+	address varchar,
+	business_id string,
+	categories string,	
+	BikeParking varchar,
+	AcceptsCR_Cards varchar,
+	price_range string,
+	parking_garage string,
+	parking_street string,
+	parking_validated string,
+	parking_lot string,
+	parking_valet string,
+	is_open string,
+	latitude string,
+	longitude string,
+	name string,
+	review_count string,
+	stars string,
+	city string,
+	state string,
+	postal_code string,
+	hours_Friday string,
+	hours_Monday string,
+	hours_Saturday string,
+	hours_Sunday string,
+	hours_Thursday string,
+	hours_Tuesday string,
+	hours_Wednesday string
+	
+	);
+	
+
+create or replace table weatherRestaurants.ods.yelp_flattened_review (
+	business_id string, 
+	cool number , 
+	date string , 
+	funny number, 
+	review_id string,
+	stars number,
+	text string,
+	useful number,
+	user_id string
+	);
+	
+create or replace table weatherRestaurants.ods.yelp_flattened_covid (
+	call_to_action_enabled string, 
+	covid_banner string, 
+	grubhub_enabled string , 
+	request_a_quote_enabled string, 
+	temporary_closed_untill string,
+        virtual_service_offered string,
+        business_id string,
+	delivery_or_takeout string,
+	highlights string
+	
+	);
+
+	
+create or replace table weatherRestaurants.ods.yelp_flattened_tip (
+	business_id string, 
+	compliment_count number , 
+	date string , 
+	text string, 
+	user_id string
+	);
+
+create or replace table weatherRestaurants.ods.yelp_flattened_checkin (
+	business_id string, 
+	date string  
+	);
+	
+create or replace table weatherRestaurants.ods.yelp_flattened_user (
+	average_stars number, 
+	compliment_cool number , 
+	compliment_cute number , 
+	compliment_funny number, 
+	compliment_hot number,
+	compliment_list number,
+	compliment_more number,
+	compliment_note number,
+	compliment_photos number,
+	compliment_plain number,
+	compliment_profile number,
+	compliment_writer number,
+	cool number,
+	elite string,
+	fans number,
+	friends string,
+	funny number,
+	name string,
+	review_count number,
+	useful number,
+	user_id string,
+	yelping_since string
+	);

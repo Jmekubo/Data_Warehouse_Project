@@ -1,0 +1,251 @@
+
+**************LOAD FROM ODS INTO DWH ************
+
+INSERT INTO weatherRestaurants.dwh.dim_climate (
+  clim_id,	
+  min,
+  max,
+  normal_min,
+  normal_max,
+  precipitation,
+  precipitation_normal
+	)
+SELECT distinct
+  clim_id,
+  min,
+  max,
+  normal_min,
+  normal_max,
+  precipitation,
+  precipitation_normal
+	
+FROM WEATHERRESTAURANTS.ODS.climate ;
+	
+
+
+
+INSERT INTO weatherRestaurants.dwh.dim_users (
+	user_id , 
+	compliment_cool ,
+	compliment_cute ,
+	compliment_funny ,
+	compliment_hot ,
+	compliment_list ,
+	compliment_more ,
+	compliment_note ,
+	compliment_photos ,
+	compliment_plain ,
+	compliment_profile,
+	compliment_writer ,
+	elite ,
+	fans ,
+	friends , 
+	user_name , 
+  	yelping_since 
+	) 
+ 
+SELECT distinct
+	user_id , 
+	compliment_cool ,
+	compliment_cute ,
+	compliment_funny ,
+	compliment_hot ,
+	compliment_list ,
+	compliment_more ,
+	compliment_note ,
+	compliment_photos ,
+	compliment_plain ,
+	compliment_profile,
+	compliment_writer ,
+	elite ,
+	fans ,
+	friends , 
+	user_name , 
+  	yelping_since  
+FROM 
+WEATHERRESTAURANTS.ODS.users;
+
+INSERT INTO weatherRestaurants.dwh.dim_business (
+	business_id,
+	address ,
+	bikeparking ,
+	AcceptsCR_Cards ,
+	price_range ,
+	parking_garage ,
+	parking_street ,
+	parking_validated ,
+	parking_lot ,
+	parking_valet ,
+	categories ,
+	city ,
+	hours_Friday ,
+	hours_Monday ,
+	hours_Saturday ,
+	hours_Sunday ,
+	hours_Thursday ,
+	hours_Tuesday ,
+	hours_Wednesday ,
+	is_open ,
+	latitude ,
+	longitude ,
+	restaurant_name,
+	postal_code ,
+	state
+	
+	) 
+ 
+SELECT distinct
+	business_id,
+	address ,
+	bikeparking ,
+	AcceptsCR_Cards ,
+	price_range ,
+	parking_garage ,
+	parking_street ,
+	parking_validated ,
+	parking_lot ,
+	parking_valet ,
+	categories ,
+	city ,
+	hours_Friday ,
+	hours_Monday ,
+	hours_Saturday ,
+	hours_Sunday ,
+	hours_Thursday ,
+	hours_Tuesday ,
+	hours_Wednesday ,
+	is_open ,
+	latitude ,
+	longitude ,
+	restaurant_name,
+	postal_code ,
+	state
+FROM 
+WEATHERRESTAURANTS.ODS.business;
+
+INSERT INTO weatherRestaurants.dwh.dim_reviews (
+	rev_id,
+	cool ,
+   	funny ,
+	stars ,
+	text ,
+	useful 
+  
+	) 
+ 
+SELECT distinct
+        rev_id,
+	cool ,
+   	funny ,
+	stars ,
+	text ,
+	useful
+ 
+FROM 
+WEATHERRESTAURANTS.ODS.reviews;
+
+INSERT INTO weatherRestaurants.dwh.dim_covid (
+	cov_id,
+	call_to_action_enabled, 
+	covid_banner , 
+	grubhub_enabled  , 
+	request_a_quote_enabled , 
+	temporary_closed_untill ,
+        virtual_service_offered ,
+	delivery_or_takeout ,
+	highlights  
+  
+	) 
+ 
+SELECT distinct
+	cov_id,
+	call_to_action_enabled, 
+	covid_banner , 
+	grubhub_enabled  , 
+	request_a_quote_enabled , 
+	temporary_closed_untill ,
+        virtual_service_offered ,
+	delivery_or_takeout ,
+	highlights
+ 
+FROM 
+WEATHERRESTAURANTS.ODS.covid;
+
+INSERT INTO weatherRestaurants.dwh.dim_tip (
+	tip_id,
+	text  
+  
+	) 
+ 
+SELECT distinct
+	tip_id,
+	text
+ 
+FROM 
+WEATHERRESTAURANTS.ODS.tip;
+
+*******LOAD DIM_DATE DIMENSION************************
+
+
+
+INSERT INTO dim_date (
+  date,
+  year, 
+  month, 
+  day_of_week,
+  day,
+  hour_of_day 
+  
+)
+
+SELECT 
+  date(review_date) as date,
+  extract(year from review_date) as year, 
+  extract(month from review_date) as month, 
+  extract(day from review_date)as day, 
+  dayname(review_date) as day_of_week, 
+  date_part(hour,review_date) as hour_of_day
+  
+
+FROM weatherRestaurants.ods.yelp_climate  ;
+
+
+
+
+*********************************************
+LOAD FACT TABLE
+*********************************************
+
+
+
+insert into fact_customer_reviews(
+	user_id ,
+	rev_id  , 
+	business_id ,
+	clim_id ,
+	cov_id ,
+	tip_id ,
+	date_id ,
+    	user_compliment_count ,
+	review_count ,
+	average_stars 
+)
+select distinct
+	user_id ,
+	rev_id  , 
+	business_id ,
+	clim_id ,
+	cov_id ,
+	tip_id ,
+	date_id ,
+    	user_compliment_count ,
+ 	review_count ,
+	average_stars
+
+from ods.yelp_climate  
+JOIN dim_date d
+    ON d.date = yelp_climate.compliment_date ;
+
+
+
+

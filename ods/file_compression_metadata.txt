@@ -1,0 +1,79 @@
+
+*********Metadata Generation ***********
+
+
+list @YELP_CSV_STAGE;
+
+list @YELP_JSON_STAGE;
+
+show objects  in WEATHERRESTAURANTS.staging;
+ 
+show objects in WEATHERRESTAURANTS.ods;
+
+********save results from above querries in csv and load to snowflake metadata schema*******
+
+create or replace table weatherRestaurants.metadata.metadata_details (
+  file_name varchar,
+  rawfile_size(MB) decimal(10,2),
+  stage_file_size(MB) decimal(10,2),
+  ods_file_size(MB) decimal(10,2)
+);
+
+create or replace table weatherRestaurants.metadata.raw(
+	id int autoincrement primary key,
+	name string,
+	size number,
+	size_mbs decimal(6,2),
+	md5 string,
+	last_modified string
+);
+
+create or replace table weatherRestaurants.metadata.staging(
+	id int autoincrement primary key,
+	created_on string,
+	name string,
+	database_name string,
+	schema_name string,
+	kind string,
+	total_rows number,
+	bytes number,
+	size_mbs decimal(6,2),
+	owner string,
+	retention_time number
+);
+
+create or replace table weatherRestaurants.metadata.ods(
+	id int autoincrement primary key,
+	created_on string,
+	name string,
+	database_name string,
+	schema_name string,
+	kind string,
+	total_rows number,
+	bytes number,
+	size_mbs decimal(6,2),
+	owner string,
+	retention_time number
+);
+
+INSERT INTO weatherRestaurants.metadata.metadata_details (
+  
+  file_name ,
+  rawfile_size,
+  stage_file_size,
+  ods_file_size
+	)
+SELECT
+	r.name AS file_name,
+	r.size_mbs AS rawfile_size,
+    	s.size_mbs AS stage_file_size,
+	o.size_mbs AS ods_file_size
+	
+	
+  
+FROM ods o 
+	JOIN raw r ON o.id = r.id
+	JOIN staging s ON o.id = s.id;
+	
+	
+select * from metadata_details;

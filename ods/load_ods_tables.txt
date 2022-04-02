@@ -1,0 +1,264 @@
+
+**************LOAD FROM FLATTENED TABLES INTO ODS TABLES************
+
+INSERT INTO weatherRestaurants.ods.business (
+	business_id ,
+	address ,
+	categories ,
+	bikeparking ,
+	AcceptsCR_Cards ,
+	price_range ,
+	parking_garage ,
+	parking_street,
+	parking_validated ,
+	parking_lot ,
+	parking_valet ,
+	is_open ,
+	latitude ,
+	longitude ,
+	restaurant_name,
+	review_count ,
+	stars ,
+	city ,
+	state ,
+	postal_code ,
+	hours_Friday ,
+	hours_Monday ,
+	hours_Saturday ,
+	hours_Sunday ,
+	hours_Thursday ,
+	hours_Tuesday ,
+	hours_Wednesday  
+	
+	) 
+ 
+SELECT 
+	business_id ,
+	address ,
+	categories ,
+	bikeparking ,
+	AcceptsCR_Cards ,
+	price_range ,
+	parking_garage ,
+	parking_street,
+	parking_validated ,
+	parking_lot ,
+	parking_valet ,
+	is_open ,
+	latitude ,
+	longitude ,
+	name AS restaurant_name,
+	review_count ,
+	stars ,
+	city ,
+	state ,
+	postal_code ,
+	hours_Friday ,
+	hours_Monday ,
+	hours_Saturday ,
+	hours_Sunday ,
+	hours_Thursday ,
+	hours_Tuesday ,
+	hours_Wednesday
+FROM 
+WEATHERRESTAURANTS.ODS.yelp_flattened_business;
+
+INSERT INTO weatherRestaurants.ods.users (
+	user_id,
+	average_stars,
+	compliment_cool,
+	compliment_cute,
+	compliment_funny,
+	compliment_hot,
+	compliment_list,
+	compliment_more,
+	compliment_note,
+	compliment_photos,
+	compliment_plain,
+	compliment_profile,
+	compliment_writer,
+	elite,
+	fans,
+	friends, 
+	user_name, 
+  	review_count,
+	yelping_since
+	) 
+ 
+SELECT 
+	user_id,
+	average_stars,
+	compliment_cool,
+	compliment_cute,
+	compliment_funny,
+	compliment_hot,
+	compliment_list,
+	compliment_more,
+	compliment_note,
+	compliment_photos,
+	compliment_plain,
+	compliment_profile,
+	compliment_writer,
+	elite,
+	fans,
+	friends, 
+	name AS user_name, 
+  	review_count,
+	yelping_since
+	
+
+FROM yelp_flattened_user  ;
+
+
+
+INSERT INTO weatherRestaurants.ods.reviews (
+  	cool ,
+	date ,	
+   	funny ,
+	review_id ,	
+	stars ,
+	text ,
+	useful ,
+	business_id ,
+	user_id 
+
+  
+	)
+SELECT 
+  
+  cool,
+  date(date) as date,
+  funny,
+  review_id,
+  stars,
+  text,
+  useful,
+  business_id,
+  user_id 
+
+FROM WEATHERRESTAURANTS.ODS.yelp_flattened_review ;
+
+**********merge-update reviews with yelp_flattened_user data on cool and useful columns**********
+
+UPDATE weatherRestaurants.ods.reviews
+SET 
+  cool = y.cool, 
+  useful = y.useful
+  
+FROM yelp_flattened_user y
+
+WHERE reviews.user_id = y.user_id;
+
+INSERT INTO weatherRestaurants.ods.covid (
+  	call_to_action_enabled, 
+	covid_banner, 
+	grubhub_enabled , 
+	request_a_quote_enabled, 
+	temporary_closed_untill,
+        virtual_service_offered,
+        delivery_or_takeout,
+	highlights,
+	business_id
+  
+	)
+SELECT 
+  
+  	call_to_action_enabled, 
+	covid_banner, 
+	grubhub_enabled , 
+	request_a_quote_enabled, 
+	temporary_closed_untill,
+        virtual_service_offered,
+        delivery_or_takeout,
+	highlights,
+	business_id
+  
+FROM WEATHERRESTAURANTS.ODS.yelp_flattened_covid;
+
+
+
+INSERT INTO weatherRestaurants.ods.tip (
+  	compliment_count , 
+	date , 
+	text , 
+	business_id ,
+	user_id 
+  
+	)
+SELECT 
+  
+  	compliment_count , 
+	date , 
+	text , 
+	business_id ,
+	user_id
+  
+FROM WEATHERRESTAURANTS.ODS.yelp_flattened_tip;
+
+
+INSERT INTO weatherRestaurants.ods.checkin (
+  	
+	date ,
+	business_id  
+  
+	)
+SELECT 
+  
+  	date ,
+	business_id
+  
+FROM WEATHERRESTAURANTS.ODS.yelp_flattened_checkin;
+
+
+**************LOAD FROM STAGING INTO ODS CSV TABLES************
+
+INSERT INTO weatherRestaurants.ods.temperature (
+  date,min,max,normal_min,normal_max
+	)
+SELECT date,min,max,normal_min,normal_max
+FROM WEATHERRESTAURANTS.STAGING.temperature;
+
+
+
+INSERT INTO weatherRestaurants.ods.precipitation (
+  date,precipitation,precipitation_normal
+	)
+SELECT date,precipitation,precipitation_normal
+FROM WEATHERRESTAURANTS.STAGING.precipitation;  
+
+
+
+	
+****update and clean precipitation table*****
+
+update precipitation
+set precipitation = null where precipitation = 'T'
+;
+
+*********insert temperature and precipitation data into climate***********
+
+INSERT INTO weatherRestaurants.ods.climate (
+  date,
+  min,
+  max,
+  normal_min,
+  normal_max,
+  precipitation,
+  precipitation_normal
+	)
+SELECT distinct
+  to_date(t.date) as date,
+  t.min as min,
+  t.max as max,
+  t.normal_min as normal_min,
+  t.normal_max as normal_max,
+  p.precipitation as precipitation,
+  p.precipitation_normal as precipitation_normal
+	
+FROM WEATHERRESTAURANTS.ODS.temperature t, precipitation p
+	WHERE t.date = p.date;
+
+
+
+
+

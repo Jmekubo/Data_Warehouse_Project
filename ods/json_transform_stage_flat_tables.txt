@@ -1,0 +1,115 @@
+
+**************LOAD / TRANSFORM FROM STAGING INTO FLATTENED  TABLES************
+
+insert into WEATHERRESTAURANTS.ODS.yelp_flattened_business
+
+select 
+  YELPJSON:"address"::string AS address,
+  YELPJSON:"business_id"::string AS "business_id",
+  YELPJSON:"categories"::string AS "categories",
+  YELPJSON:attributes."BikeParking"::string AS "BikeParking",
+  YELPJSON:attributes."BusinessAcceptsCreditCards"::string AS "AcceptsCR_Cards" ,
+  YELPJSON:attributes."RestaurantsPriceRange2"::string AS "price_range",
+  YELPJSON:attributes.BusinessParking."garage"::string AS "parking_garage",
+  YELPJSON:attributes.BusinessParking."street"::string AS "parking_street",
+  YELPJSON:attributes.BusinessParking."validated"::string AS "Parking_validated",
+  YELPJSON:attributes.BusinessParking."lot"::string AS "parking_lot",
+  YELPJSON:attributes.BusinessParking."valet"::string AS "parking_valet", 
+  YELPJSON:"is_open"::string AS "is_open", 
+  YELPJSON:"latitude"::string AS "latitude", 
+  YELPJSON:"longitude"::string AS "longitude", 
+  YELPJSON:"name"::string AS "restaurant_name",
+  YELPJSON:"review_count"::string AS "review_count",  
+  YELPJSON:"stars"::string AS "stars",
+  YELPJSON:"city"::string AS "city", 
+  YELPJSON:"state"::string AS "state",
+  YELPJSON:"postal_code"::string AS "postal_code",
+  YELPJSON:hours."Friday"::string AS "hours_Friday",
+  YELPJSON:hours."Monday"::string AS "hours_Monday", 
+  YELPJSON:hours."Saturday"::string AS "hours_Saturday", 
+  YELPJSON:hours."Sunday"::string AS "hours_Sunday", 
+  YELPJSON:hours."Thursday"::string AS "hours_Thursday", 
+  YELPJSON:hours."Tuesday"::string AS "hours_Tuesday", 
+  YELPJSON:hours."Wednesday"::string AS "hours_Wednesday"  
+
+from 
+    WEATHERRESTAURANTS.STAGING.yelp_business;
+
+
+
+
+insert into WEATHERRESTAURANTS.ODS.yelp_flattened_review 
+select 
+  PARSE_JSON($1):business_id, 
+  PARSE_JSON($1):cool, 
+  PARSE_JSON($1):date, 
+  PARSE_JSON($1):funny, 
+  PARSE_JSON($1):review_id,
+  PARSE_JSON($1):stars, 
+  PARSE_JSON($1):text,
+  PARSE_JSON($1):useful,
+  PARSE_JSON($1):user_id
+from 
+WEATHERRESTAURANTS.STAGING.yelp_review;
+
+
+
+insert into WEATHERRESTAURANTS.ODS.yelp_flattened_covid 
+select 
+  PARSE_JSON($1):call_to_action_enabled , 
+  PARSE_JSON($1):covid_banner, 
+  PARSE_JSON($1):grubhub_enabled, 
+  PARSE_JSON($1):request_a_quote_enabled, 
+  PARSE_JSON($1):temporary_closed_untill,
+  PARSE_JSON($1):virtual_service_offered, 
+  PARSE_JSON($1):business_id,
+  PARSE_JSON($1):delivery_or_takeout,
+  PARSE_JSON($1):highlights
+from 
+WEATHERRESTAURANTS.STAGING.yelp_covid;
+
+insert into WEATHERRESTAURANTS.ODS.yelp_flattened_tip 
+select 
+  PARSE_JSON($1):business_id,
+  PARSE_JSON($1):compliment_count,
+  PARSE_JSON($1):date,
+  PARSE_JSON($1):text ,
+  PARSE_JSON($1):user_id 
+
+from 
+WEATHERRESTAURANTS.STAGING.yelp_tip;
+
+insert into WEATHERRESTAURANTS.ODS.yelp_flattened_checkin 
+select 
+  PARSE_JSON($1):business_id,
+  PARSE_JSON($1):date
+
+from 
+WEATHERRESTAURANTS.STAGING.yelp_checkin;
+
+insert into WEATHERRESTAURANTS.ODS.yelp_flattened_user 
+select 
+  PARSE_JSON($1):average_stars, 
+  PARSE_JSON($1):compliment_cool, 
+  PARSE_JSON($1):compliment_cute, 
+  PARSE_JSON($1):compliment_funny, 
+  PARSE_JSON($1):compliment_hot,
+  PARSE_JSON($1):compliment_list, 
+  PARSE_JSON($1):compliment_more,
+  PARSE_JSON($1):compliment_note,
+  PARSE_JSON($1):compliment_photos,
+  PARSE_JSON($1):compliment_plain,
+  PARSE_JSON($1):compliment_profile,
+  PARSE_JSON($1):compliment_writer,
+  PARSE_JSON($1):cool,
+  PARSE_JSON($1):elite,
+  PARSE_JSON($1):fans,
+  PARSE_JSON($1):friends,
+  PARSE_JSON($1):funny,
+  PARSE_JSON($1):name,
+  PARSE_JSON($1):review_count,
+  PARSE_JSON($1):useful,
+  PARSE_JSON($1):user_id,
+  PARSE_JSON($1):yelping_since
+from 
+WEATHERRESTAURANTS.STAGING.yelp_user;

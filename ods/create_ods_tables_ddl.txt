@@ -1,0 +1,122 @@
+
+***********create ODS  tables *****************
+		
+	
+create or replace table weatherRestaurants.ods.users (
+	user_id varchar primary key, 
+	average_stars int,
+	compliment_count int null,
+	compliment_cool int,
+	compliment_cute int,
+	compliment_funny int,
+	compliment_hot int,
+	compliment_list int,
+	compliment_more int,
+	compliment_note int,
+	compliment_photos int,
+	compliment_plain int,
+	compliment_profile int,
+	compliment_writer int,
+	elite string,
+	fans int,
+	friends string, 
+	user_name string, 
+  	review_count int,
+	yelping_since timestamp
+	);
+	
+
+		
+create or replace table weatherRestaurants.ods.business (
+	business_id varchar primary Key,
+	address text null,
+	categories text,
+	bikeparking varchar(255),
+	AcceptsCR_Cards varchar(50),
+	price_range varchar,
+	parking_garage text,
+	parking_street text,
+	parking_validated text,
+	parking_lot text,
+	parking_valet text,
+	is_open varchar,
+	latitude varchar,
+	longitude varchar,
+	restaurant_name text,
+	review_count int,
+	stars decimal,
+	city varchar(200),
+	state varchar(50),
+	postal_code text,
+	hours_Friday varchar,
+	hours_Monday varchar,
+	hours_Saturday varchar,
+	hours_Sunday varchar,
+	hours_Thursday varchar,
+	hours_Tuesday varchar,
+	hours_Wednesday varchar
+
+	);
+		
+		       
+create or replace table weatherRestaurants.ods.reviews (
+	rev_id int autoincrement primary Key,
+	cool number ,
+	date date,	
+   	funny number,
+	review_id varchar,	
+	stars number,
+	text string,
+	useful number,
+	business_id varchar references business(business_id),
+	user_id varchar references users(user_id),
+        clim_id int references climate(clim_id )	
+);
+	
+create or replace table weatherRestaurants.ods.covid (
+	cov_id int autoincrement primary Key,
+	call_to_action_enabled varchar, 
+	covid_banner varchar, 
+	grubhub_enabled varchar , 
+	request_a_quote_enabled varchar, 
+	temporary_closed_untill varchar,
+        virtual_service_offered varchar,
+	delivery_or_takeout varchar,
+	highlights varchar,
+	business_id varchar references business(business_id)
+	);
+
+create or replace table weatherRestaurants.ods.tip (
+	tip_id int autoincrement primary Key,
+	compliment_count number , 
+	date string , 
+	text string, 
+	business_id varchar references business(business_id),
+	user_id varchar references users(user_id)
+	);
+
+create or replace table weatherRestaurants.ods.checkin (
+	chk_id int autoincrement primary Key,
+	date string ,
+	business_id varchar references business(business_id) 
+	);	
+	
+create or replace table weatherRestaurants.ods.climate (
+	clim_id int autoincrement primary Key, 
+	date date , 
+	min int,
+	max int,
+	normal_min int,
+	normal_max int,
+	precipitation varchar,
+	precipitation_normal double
+	);
+		
+
+		
+
+
+
+
+
+

@@ -1,0 +1,30 @@
+
+select distinct
+	
+	b.restaurant_name ,
+	c.min ,
+        c.max ,
+        c.normal_min ,
+        c.normal_max ,
+	c.precipitation  ,
+	c.precipitation_normal,	
+        f.average_stars,
+	f.user_compliment_count,
+	f.review_count
+
+from fact_customer_reviews f
+
+full JOIN dim_business b
+		ON b.business_id = f.business_id
+full JOIN dim_date d
+        ON d.date_id = f.date_id
+			
+full JOIN dim_reviews r
+		ON r.rev_id = f.rev_id
+
+full JOIN dim_climate c
+		ON c.clim_id = f.clim_id 
+where b.restaurant_name is not null ;
+	
+
+
